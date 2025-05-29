@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const PORT = 5005;
 
@@ -36,6 +37,12 @@ app.get("/api/cohorts", (req, res) => {
 app.get("/api/students", (req, res) => {
   res.json(students);
 });
+
+// Mongoose conection with database
+mongoose
+  .connect("mongodb://127.0.0.1:27017/cohort-tools-api")
+  .then(x => console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`))
+  .catch(err => console.error("Error connecting to mongo", err));
 
 // START SERVER
 app.listen(PORT, () => {
