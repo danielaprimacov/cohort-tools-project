@@ -1,0 +1,38 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+// Create Schema
+const CohortsSchema = new Schema({
+  cohortSlug: { type: String, unique: true, required: true },
+  cohortName: { type: String, required: true },
+  program: {
+    type: String,
+    enum: ["Web Dev", "UX/UI", "Data Analytics", "Cybersecurity"],
+  },
+  format: { type: String, enum: ["Full Time", "Part Time"] },
+  campus: {
+    type: String,
+    enum: [
+      "Madrid",
+      "Barcelona",
+      "Miami",
+      "Paris",
+      "Berlin",
+      "Amsterdam",
+      "Lisbon",
+      "Remote",
+    ],
+  },
+  startDate: { type: Date, default: Date.now() },
+  endDate: Date,
+  inProgress: { type: boolean, default: false },
+  programManager: { type: String, required: true },
+  leadTeacher: { type: String, required: true },
+  totalHours: { type: Number, default: 360 },
+});
+
+// Create Model
+const Cohorts = mongoose.model("Cohorts", CohortsSchema);
+
+// Export the Model
+module.exports = Cohorts;
