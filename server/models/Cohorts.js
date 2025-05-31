@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+
 // Create Schema
 const CohortsSchema = new Schema({
   cohortSlug: { type: String, unique: true, required: true },
@@ -25,7 +26,7 @@ const CohortsSchema = new Schema({
   },
   startDate: { type: Date, default: Date.now() },
   endDate: Date,
-  inProgress: { type: boolean, default: false },
+  inProgress: { type: Boolean, default: false },
   programManager: { type: String, required: true },
   leadTeacher: { type: String, required: true },
   totalHours: { type: Number, default: 360 },
