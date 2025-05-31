@@ -64,7 +64,7 @@ router.get("/api/cohorts", (req, res) => {
 
 // 4. Retrieves a specific cohort by id
 router.get("/api/cohorts/:cohortId", (req, res) => {
-  const {cohortId} = req.params;
+  const { cohortId } = req.params;
 
   Cohorts.findById(cohortId)
     .then((foundedCohort) => {
