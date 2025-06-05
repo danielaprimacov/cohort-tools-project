@@ -1,8 +1,8 @@
 const express = require("express");
 
 // Import model
-const Students = require("../models/Students");
-const Cohorts = require("../models/Cohorts");
+const Student = require("../models/Student");
+const Cohort = require("../models/Cohort");
 const router = express.Router();
 
 const students = require("../students.json");
@@ -11,7 +11,7 @@ const students = require("../students.json");
 // -------------------------
 
 // 1. Creates a new student
-router.post("/api/students/", (req, res) => {
+router.post("/api/students/", (req, res, next) => {
   const {
     firstName,
     lastName,
@@ -26,7 +26,7 @@ router.post("/api/students/", (req, res) => {
     projects,
   } = req.body;
 
-  Students.create({
+  Student.create({
     firstName,
     lastName,
     email,
@@ -44,37 +44,35 @@ router.post("/api/students/", (req, res) => {
       res.status(201).json(createdStudent);
     })
     .catch((error) => {
-      console.log("Error while creating the student");
-      res.status(500).json(error);
+      next(error);
     });
 });
 
 // 2. Retrieves all the students in the database collection
-router.get("/api/students/", (req, res) => {
+router.get("/api/students/", (req, res, next) => {
   // res.json(students);
 
-  Students.find({})
+  Student.find({})
     .populate("cohort")
     .then((allStudents) => {
       console.log("Retrived students!");
       res.status(200).json(allStudents);
     })
     .catch((error) => {
-      console.log("Error while retrieving students");
-      res.status(500).json(error);
+      next(error);
     });
 });
 
 // 3. Retrieves all of the students for a given cohort
-router.get("/api/students/cohort/:cohortId", (req, res) => {
+router.get("/api/students/cohort/:cohortId", (req, res, next) => {
   const { cohortId } = req.params;
 
-  Cohorts.findById(cohortId).then((cohort) => {
+  Cohort.findById(cohortId).then((cohort) => {
     if (!cohort) {
-       res.status(404).json({ message: "Cohort not found" });
+      res.status(404).json({ message: "Cohort not found" });
     }
 
-     Students.find({ cohort: cohortId })
+    Student.find({ cohort: cohortId })
       .populate("cohort")
       .then((students) => {
         console.log(
@@ -83,16 +81,15 @@ router.get("/api/students/cohort/:cohortId", (req, res) => {
         res.status(200).json({ cohort: cohort, students: students });
       })
       .catch((error) => {
-        console.log("Error while retrieving students by cohort!");
-        res.status(500).json(error);
+        next(error);
       });
   });
 });
 
 // 4. Retrieves a specific student by id
-router.get("/api/students/:studentId", (req, res) => {
+router.get("/api/students/:studentId", (req, res, next) => {
   const { studentId } = req.params;
-  Students.findById(studentId)
+  Student.findById(studentId)
     .populate("cohort")
     .then((foundedStudent) => {
       if (!foundedStudent) {
@@ -102,13 +99,12 @@ router.get("/api/students/:studentId", (req, res) => {
       res.status(200).json(foundedStudent);
     })
     .catch((error) => {
-      console.log("Error while finding students");
-      res.status(500).json(error);
+      next(error);
     });
 });
 
 // 5. Updates a specific student by id
-router.put("/api/students/:studentId", (req, res) => {
+router.put("/api/students/:studentId", (req, res, next) => {
   const { studentId } = req.params;
   const {
     firstName,
@@ -124,7 +120,7 @@ router.put("/api/students/:studentId", (req, res) => {
     projects,
   } = req.body;
 
-  Students.findByIdAndUpdate(
+  Student.findByIdAndUpdate(
     studentId,
     {
       firstName,
@@ -146,23 +142,21 @@ router.put("/api/students/:studentId", (req, res) => {
       res.status(200).json(updatedStudent);
     })
     .catch((error) => {
-      console.log("Error while updating student information!");
-      res.status(500).json(error);
+      next(error);
     });
 });
 
 // 6. Deletes a specific student by id
-router.delete("/api/students/:studentId", (req, res) => {
+router.delete("/api/students/:studentId", (req, res, next) => {
   const { studentId } = req.params;
 
-  Students.findByIdAndDelete(studentId)
+  Student.findByIdAndDelete(studentId)
     .then(() => {
       console.log("Student deleted successfully!");
       res.status(204).json({ message: "Student deleted!" });
     })
     .catch((error) => {
-      console.log("Error while deleting student!");
-      res.status(500).json(error);
+      next(error);
     });
 });
 

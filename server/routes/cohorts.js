@@ -1,7 +1,7 @@
 const express = require("express");
 
 // Import model
-const Cohorts = require("../models/Cohorts");
+const Cohort = require("../models/Cohort");
 const router = express.Router();
 
 const cohorts = require("../cohorts.json");
@@ -9,7 +9,7 @@ const cohorts = require("../cohorts.json");
 // --- > COHORT Routes < ---
 // -------------------------
 // 1. Creates a new cohort
-router.post("/api/cohorts/", (req, res) => {
+router.post("/api/cohorts/", (req, res, next) => {
   const {
     cohortSlug,
     cohortName,
@@ -24,7 +24,7 @@ router.post("/api/cohorts/", (req, res) => {
     totalHours,
   } = req.body;
 
-  Cohorts.create({
+  Cohort.create({
     cohortSlug,
     cohortName,
     program,
@@ -42,8 +42,7 @@ router.post("/api/cohorts/", (req, res) => {
       res.status(201).json(createdCohort);
     })
     .catch((error) => {
-      console.log("Error while creating the cohort!");
-      res.status(500).json(error);
+      next(error);
     });
 });
 
@@ -51,34 +50,32 @@ router.post("/api/cohorts/", (req, res) => {
 router.get("/api/cohorts", (req, res) => {
   //res.json(cohorts);
 
-  Cohorts.find({})
+  Cohort.find({})
     .then((cohorts) => {
       console.log("Retrieved cohorts!");
       res.status(200).json(cohorts);
     })
     .catch((error) => {
-      console.log("Error while retrieving cohorts:", error);
-      res.status(500).json(error);
+      next(error);
     });
 });
 
 // 4. Retrieves a specific cohort by id
-router.get("/api/cohorts/:cohortId", (req, res) => {
+router.get("/api/cohorts/:cohortId", (req, res, next) => {
   const { cohortId } = req.params;
 
-  Cohorts.findById(cohortId)
+  Cohort.findById(cohortId)
     .then((foundedCohort) => {
       console.log(`The cohort with ${cohortId} was founded!`);
       res.status(200).json(foundedCohort);
     })
     .catch((error) => {
-      console.log("Error while finding the given cohort", error);
-      res.status(500).json(error);
+      next(error);
     });
 });
 
 // 5. Updates a specific cohort by id
-router.put("/api/cohorts/:cohortId", (req, res) => {
+router.put("/api/cohorts/:cohortId", (req, res, next) => {
   const { cohortId } = req.params;
   const {
     cohortSlug,
@@ -94,7 +91,7 @@ router.put("/api/cohorts/:cohortId", (req, res) => {
     totalHours,
   } = req.body;
 
-  Cohorts.findByIdAndUpdate(
+  Cohort.findByIdAndUpdate(
     cohortId,
     {
       cohortSlug,
@@ -116,20 +113,18 @@ router.put("/api/cohorts/:cohortId", (req, res) => {
       res.status(200).json(updatedCohort);
     })
     .catch((error) => {
-      console.log("Error while updating cohort!");
-      res.status(500).json(error);
+      next(error);
     });
 });
 
 // 6. Deletes a specific cohorts by id
-router.delete("/api/cohorts/:cohortId", (req, res) => {
+router.delete("/api/cohorts/:cohortId", (req, res, next) => {
   const { cohortId } = req.params;
 
-  Cohorts.findByIdAndDelete(cohortId)
+  Cohort.findByIdAndDelete(cohortId)
     .then(() => res.status(204).json({ message: "Cohort was deleted!" }))
     .catch((error) => {
-      console.log("Error while deleting the cohort!");
-      res.status(500).json(error);
+      next(error);
     });
 });
 

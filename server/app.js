@@ -5,6 +5,12 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const PORT = 5005;
 
+// Import the custom error handling middleware
+const {
+  errorHandler,
+  notFoundHandler,
+} = require("./middleware/error-handling");
+
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
 // const cohorts = require("./cohorts.json");
@@ -32,6 +38,10 @@ app.get("/docs", (req, res) => {
 
 // Import Cohorts and Students Routes
 app.use("/", [require("./routes/cohorts"), require("./routes/students")]);
+
+// Set up custom error handling middleware
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 // START SERVER
 app.listen(PORT, () => {
