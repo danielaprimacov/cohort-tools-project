@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
@@ -9,7 +10,9 @@ const PORT = 5005;
 const {
   errorHandler,
   notFoundHandler,
-} = require("./middleware/error-handling");
+} = require("./middleware/error-handling.middleware");
+
+const { isAuthenticated } = require("./middleware/jwt.middleware");
 
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
@@ -37,7 +40,12 @@ app.get("/docs", (req, res) => {
 });
 
 // Import Cohorts and Students Routes
-app.use("/", [require("./routes/cohorts"), require("./routes/students")]);
+app.use("/", [
+  require("./routes/cohorts.routes"),
+  require("./routes/students.routes"),
+]);
+app.use("/auth", require("./routes/auth.routes"));
+app.use("/", isAuthenticated, require("./routes/user.routes"));
 
 // Set up custom error handling middleware
 app.use(notFoundHandler);

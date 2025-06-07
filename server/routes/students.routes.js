@@ -40,7 +40,7 @@ router.post("/api/students/", (req, res, next) => {
     projects,
   })
     .then((createdStudent) => {
-      console.log("The students was created!");
+      console.log("The student was created!");
       res.status(201).json(createdStudent);
     })
     .catch((error) => {
@@ -67,23 +67,27 @@ router.get("/api/students/", (req, res, next) => {
 router.get("/api/students/cohort/:cohortId", (req, res, next) => {
   const { cohortId } = req.params;
 
-  Cohort.findById(cohortId).then((cohort) => {
-    if (!cohort) {
-      res.status(404).json({ message: "Cohort not found" });
-    }
+  Cohort.findById(cohortId)
+    .then((cohort) => {
+      if (!cohort) {
+        return res.status(404).json({ message: "Cohort not found" });
+      }
 
-    Student.find({ cohort: cohortId })
-      .populate("cohort")
-      .then((students) => {
-        console.log(
-          `Retrived ${students.length} for cohort with id ${cohortId}`
-        );
-        res.status(200).json({ cohort: cohort, students: students });
-      })
-      .catch((error) => {
-        next(error);
-      });
-  });
+      return Student.find({ cohort: cohortId })
+        .populate("cohort")
+        .then((students) => {
+          console.log(
+            `Retrived ${students.length} for cohort with id ${cohortId}`
+          );
+          res.status(200).json(students);
+        })
+        .catch((error) => {
+          next(error);
+        });
+    })
+    .catch((error) => {
+      next(error);
+    });
 });
 
 // 4. Retrieves a specific student by id
